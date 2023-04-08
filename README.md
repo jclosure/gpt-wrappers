@@ -5,7 +5,32 @@
 1. create an api key from: https://platform.openai.com/account/api-keys
 2. save the api key in a file call key.txt
 3. open tester.ipynb and try it out
-   
+
+
+## GPT Tricks
+
+```python
+import tricks
+
+content = """
+Buzz Aldrin left a pen on the moon after the first visit. Eugene Cernan, the last moon walker, found it. It still worked.
+"""
+
+# chaining opposite+summarized+analogy
+flipped = tricks.opposite(content)
+summarized = tricks.summarize(flipped)
+analogy = tricks.analogy(summarized)
+```
+
+#### Example: Automating Twitter+GPT
+
+```python
+# see impl for how to
+import engine
+tweets = engine.run()
+```
+
+
 ### Generate variation images of any image online
 ```python
 import os
@@ -30,8 +55,6 @@ for i in range(1, 10):
     img2.show()
 ```
 
-## Content
-
 ### Twitter
 
 #### Scrape a twitter search and storing all the text and images
@@ -54,3 +77,4 @@ output_dir = f'./tmp/{query.replace(" ", "_")}'
 scraper = ts.scrape_user("mtgreenee")
 ts.run_scraper(scraper, output_dir)
 ```
+

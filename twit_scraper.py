@@ -59,6 +59,7 @@ def scrape_hashtag(hashtag):
 def run_scraper(scraper, output_dir, max_results=100):
 	os.makedirs(output_dir, exist_ok=True)
 	output_filename = f'./{output_dir}/tweets.txt'
+	tweet_dicts = []
 	with open(output_filename, 'w') as f:
 		i = 0
 		for i, tweet in enumerate(scraper.get_items(), start = 1):
@@ -69,21 +70,27 @@ def run_scraper(scraper, output_dir, max_results=100):
 			image_files = download_photos(tweet, photos_dir)
 		
 			# Converting the scraped tweet into a json object
-			tweet_json = json.loads(tweet.json())
-			tweet_json['image_files'] = image_files
+			tweet_dict = json.loads(tweet.json())
+			tweet_dict['image_files'] = image_files
+			tweet_dicts.append(tweet_dict)
 
 			#Printing out the content of a tweet
-			print (f"\nScraped tweet: {tweet_json['content']}")
+			print (f"\nScraped tweet: {tweet_dict['content']}")
 			#Writing to file
-			f.write(json.dumps(tweet_json))
+			f.write(json.dumps(tweet_dict))
 			f.write('\n')
 			f.flush()
 			#Terminate the loop if we reach max_results
 			if max_results and i > max_results:
 				break
+	return tweet_dicts
 
-def file_to_dataframe(file_path):
+def file_to_list(file_path):
 	with open(file_path) as f:
 		lines = f.readlines()
 		objs = [json.loads(o) for o in lines]
-		return pd.DataFrame.from_records(objs)
+		return objs
+	
+def file_to_dataframe(file_path):
+	objs = file_to_list(file_path)
+	return pd.DataFrame.from_records(objs)
