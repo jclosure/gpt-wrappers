@@ -38,13 +38,13 @@ class Utils:
 
 
     @staticmethod
-    def create_variation(image):
+    def create_variation(image, n=1):
         byte_stream = io.BytesIO()
         image.save(byte_stream, format='PNG')
         byte_array = byte_stream.getvalue()
         response = openai.Image.create_variation(
             image=byte_array,
-            n=1,
+            n=n,
             size="1024x1024"
         )
         return response

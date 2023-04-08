@@ -3,7 +3,7 @@ import os
 from snscrape.modules import twitter
 import json
 import requests
-
+import pandas as pd
 
 """Example:
 queries = ['fat frogs']
@@ -81,3 +81,9 @@ def run_scraper(scraper, output_dir, max_results=100):
 			#Terminate the loop if we reach max_results
 			if max_results and i > max_results:
 				break
+
+def file_to_dataframe(file_path):
+	with open(file_path) as f:
+		lines = f.readlines()
+		objs = [json.loads(o) for o in lines]
+		return pd.DataFrame.from_records(objs)
