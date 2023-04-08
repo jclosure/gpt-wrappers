@@ -43,12 +43,11 @@ def scrape_tweet(tweet_id):
 	return scraper
 
 # Input:
-# If scraping by Username - username (string), False  (boolean)
-# Example username "Proxyway1", False
-# If scraping by User ID - user_id (string), True (boolean)
-# Example User ID "1097450610864123904", True
-def scrape_user(user, isUserId):
-	scraper = twitter.TwitterUserScraper(user, isUserId)
+# Takes a username string or userid number
+# Example: user as UserName: "Proxyway1"
+# Example: user as UserID: 1097450610864123904
+def scrape_user(user):
+	scraper = twitter.TwitterUserScraper(user)
 	return scraper
 
 # Input: Twitter hashtag (string) (without '#')
