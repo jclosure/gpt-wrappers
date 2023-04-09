@@ -10,27 +10,32 @@
 2. save the api key in a file call key.txt
 
 ## Quickstart
+
 #### Engine Example:
 
-**Plan 1**:
-```plantuml
-title Melted Clone Bot
-Caller->Scraper: Specify scrape defs
-Scraper->Twitter: Scrape data
-Caller<-Twitter: Data
-note right of Twitter: Gets all text, images, links, etc.
-Caller->Engine: Process text and images
-note right of Engine: Transformations
-Engine->Caller: New content
-Caller->Twitter: Submit content
+```mermaid
+sequenceDiagram
+    Caller->>Scraper: Specify scrape defs
+    Scraper->>Twitter: Scrape data
+    Twitter->>Caller: Data
+    note right of Twitter: Gets all text, images, links, etc.
+    Caller->>Engine: Process text and images
+    Engine->>Engine: Preprocessing
+    Engine->>OpenAI: Interaction
+    note right of OpenAI: Transformations
+    OpenAI->>Engine: Output
+    Engine->>Engine: Postprocessing
+    Engine->>Caller: New content
+    Caller->>Twitter: Authenticate via API
+    Twitter->>Caller: Success
+    Caller->>Twitter: Submit content
 ```
 
 ```python
+# example code: run the Plan demo flow above.
 import engine
 
 queries = ['Incredible Hulk', 'Nicolas Cage']
-
-# run the Plan 1 demo flow from above
 tweets = engine.run(queries, n=40)
 ```
 
@@ -52,16 +57,16 @@ summarized = tricks.summarize(flipped)
 analogy = tricks.analogy(summarized)
 ```
 
-### DALL-E Examples
+#### DALL-E Examples
 
-#### Generate variation images from an image online
+Generate variation images from an image online
 ```python
 import engine
 url = "https://s3.amazonaws.com/CFSV2/obituaries/photos/9995/995933/5fc571372bb52.JPG"
 file_id = "milo"
 
 # save the images and return
-seed, images = engine.variations(url, file_id)
+seed, images = engine.variations(url, file_id, n=10)
 
 # view the images on desktop
 seed.show()
@@ -76,7 +81,7 @@ Anonymously scrape twitter with critera and storing all the text and images
 ```python
 import twit_scraper as ts
 
-queries = ['edgelord', 'overwatch', 'toxic gamers']
+queries = ['overwatch', 'toxic gamers', 'barbie']
 for query in queries:
     output_dir = f'./tmp/{query.replace(" ", "_")}'
     scraper = ts.scrape_search(query)
