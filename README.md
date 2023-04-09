@@ -7,22 +7,14 @@
 3. open tester.ipynb and try it out
 
 
-## GPT Tricks
 
-```python
-import tricks
-
-content = """
-Buzz Aldrin left a pen on the moon after the first visit. Eugene Cernan, the last moon walker, found it. It still worked.
-"""
-
-# chaining opposite+summarized+analogy
-flipped = tricks.opposite(content)
-summarized = tricks.summarize(flipped)
-analogy = tricks.analogy(summarized)
+**Plan 1**:
+```plantuml
+!include docs/plan1.puml
 ```
 
-#### Example: Automating Twitter+GPT
+## Quickstart
+#### Engine Example:
 
 ```python
 # see impl for how to
@@ -30,34 +22,10 @@ import engine
 tweets = engine.run()
 ```
 
+### Twitter Examples
+Anonymously scrape twitter with critera and storing all the text and images
 
-### Generate variation images of any image online
-```python
-import os
-from utils import Utils
-
-Utils.load_key()
-
-url = "https://s3.amazonaws.com/CFSV2/obituaries/photos/9995/995933/5fc571372bb52.JPG"
-file_id = "milo"
-file_dir = f"./tmp/{file_id}"
-os.makedirs(file_dir, exist_ok=True)
-
-img = Utils.download_image(url)
-img = Utils.crop_image(img)
-img.save(f"{file_dir}/0.png")
-
-for i in range(1, 10):
-    res = Utils.create_variation(img)
-    url = res.data[0].url
-    img2 = Utils.download_image(url)
-    img2.save(f"{file_dir}/{i}.png")
-    img2.show()
-```
-
-### Twitter
-
-#### Scrape a twitter search and storing all the text and images
+#### Scrape with queries
 ```python
 import twit_scraper as ts
 
@@ -73,8 +41,34 @@ for query in queries:
 ```python
 import twit_scraper as ts
 
-output_dir = f'./tmp/{query.replace(" ", "_")}'
-scraper = ts.scrape_user("mtgreenee")
+user = "ChomskyDotInfo"
+output_dir = f'./tmp/{user}'
+scraper = ts.scrape_user(user)
 ts.run_scraper(scraper, output_dir)
 ```
 
+### GPT Examples
+
+#### Quickstart GPT Tricks
+
+```python
+import tricks
+
+content = """
+Buzz Aldrin left a pen on the moon after the first visit. 
+Eugene Cernan, the last moon walker, found it. It still worked.
+"""
+
+# chaining opposite+summarized+analogy
+flipped = tricks.opposite(content)
+summarized = tricks.summarize(flipped)
+analogy = tricks.analogy(summarized)
+```
+
+#### Generate variation images from an image online
+```python
+import engine
+url = "https://s3.amazonaws.com/CFSV2/obituaries/photos/9995/995933/5fc571372bb52.JPG"
+file_id = "milo"
+seed, images = engine.variations(url, file_id)
+```
