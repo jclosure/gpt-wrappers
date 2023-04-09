@@ -2,16 +2,17 @@ import os
 from utils import Utils
 import tricks
 import twit_scraper as ts
+from PIL import Image
 
 # setup openapi key
 Utils.load_key()
 
 out_dir = "./tmp"
-queries = ['monkey', 'chicken']
-tweet_count = 10
-variation_count = 1
 
-def get_tweet_buckets(n=10):
+tweet_count = 10
+variation_count = 2
+
+def search_twitter(queries, n=tweet_count):
     results = {}
     for query in queries:
         query_name = query.replace(" ", "_")
@@ -20,17 +21,31 @@ def get_tweet_buckets(n=10):
         results[query_name] = ts.run_scraper(scraper, output_dir, n)
     return results
 
-def run():
-    buckets = get_tweet_buckets(n=tweet_count)
-    new_contents = []
+# demo fn
+def run(queries, n=tweet_count):
+    tweets = execute_queries(queries, n=n)
+    for tweet in tweets:
+        image_files = tweet['image_files']
+        for path in image_files:
+            seed, images = variations(path, tweet['name'], n=1)
+            for img in [seed] + images:
+                img.show()
+    return tweets
+
+def execute_queries(queries, n=tweet_count):
+    buckets = search_twitter(queries, n=n)
+    new_tweets = []
     for name, bucket in buckets.items():
         for tweet in bucket:
             content = tweet['renderedContent']
             flipped = tricks.opposite(content)
             summarized = tricks.summarize(flipped)
-            analogy = tricks.analogy(summarized)
-            new_contents.append(analogy)
-    return new_contents
+            # analogy = tricks.analogy(summarized)
+
+            tweet['botContent'] = summarized
+            tweet['name'] = name
+            new_tweets.append(tweet)
+    return new_tweets
 
 
 def variations(url, file_id, n=variation_count):
@@ -43,7 +58,12 @@ def variations(url, file_id, n=variation_count):
     os.makedirs(file_dir, exist_ok=True)
 
     images = []
-    seed = Utils.download_image(url)
+    if url.startswith('http'):
+        seed = Utils.download_image(url)
+    else:
+        # assume it's a local file for now
+        seed = Image.open(url)
+
     seed = Utils.crop_image(seed)
     seed.save(f"{file_dir}/orig.png")
 
